@@ -1,44 +1,23 @@
+// backend/models/Usuario.js
+
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 const usuarioSchema = new mongoose.Schema({
-  nombre: {
+  name: {
     type: String,
-    required: true,
-    trim: true,
+    required: true, // Asegúrate de que este campo sea obligatorio
   },
-  correo: {
+  email: {
     type: String,
     required: true,
-    unique: true,
-    trim: true,
+    unique: true, // Esto asegura que el email sea único
   },
-  contrasena: {
+  password: {
     type: String,
     required: true,
-    minlength: 6,
   },
-  rol: {
-    type: String,
-    required: true,
-    enum: ['admin', 'usuario'],
-    default: 'usuario',
-  }
-}, {
-  timestamps: true,
 });
 
-usuarioSchema.pre('save', async function(next) {
-  if (this.isModified('contrasena')) {
-    this.contrasena = await bcrypt.hash(this.contrasena, 8);
-  }
-  next();
-});
+const Usuario = mongoose.model('Usuario', usuarioSchema);
 
-usuarioSchema.methods.generarAuthToken = async function() {
-  const token = jwt.sign({ _id: this._id.toString() }, process.env.JWT_SECRET);
-  return token;
-};
-
-module.exports = mongoose.model('Usuario', usuarioSchema);
+module.exports = Usuario;
